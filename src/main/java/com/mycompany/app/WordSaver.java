@@ -31,7 +31,6 @@ public class WordSaver {
     private static final Map<String, Integer> AVAILABLE_KEY_CODES = new HashMap<>();
     @Spec CommandSpec spec;
 
-
     static {
         AVAILABLE_KEY_CODES.put("B", 48);
         AVAILABLE_KEY_CODES.put("F", 33);
@@ -43,12 +42,10 @@ public class WordSaver {
         AVAILABLE_KEY_CODES.put("Y", 21);
     }
 
-
     public static void main(String[] args) {
         new CommandLine(new WordSaver()).execute(args);
     }
    
-
     @Command(name = "start", description = "Starts the background service to save words.")
     public static class StartService implements Runnable {
         private static final String DEFAULT_FILE_PATH = System.getProperty("user.home") + "\\Documents\\words.txt";
@@ -60,7 +57,7 @@ public class WordSaver {
         @Option(names = {"-k", "--keycode"}, 
                 description = "The key after pressing it saves the selected word to a file. The default key is 'B'.",
                 converter = KeyCodeConverter.class)
-        private int keyCode = 48;
+        private int keyCode = AVAILABLE_KEY_CODES.get("B");
  
         @Override
         public void run() {
@@ -114,7 +111,7 @@ public class WordSaver {
                     try (BufferedWriter bw = new BufferedWriter(new FileWriter(filePath, true))) {
                         String text = (String) clipboard.getData(DataFlavor.stringFlavor);
                         if (text != null && text != " ") {
-                            bw.write(text + System.lineSeparator());
+                            bw.write(text + System.lineSeparator()); //Save the selected text to a file, split by the standard system delimiter (e.g. ‘\n’).
                         } 
                     }
                     catch (UnsupportedFlavorException | IOException e) {
@@ -140,7 +137,6 @@ public class WordSaver {
         }
     }
 
-
     @Command(name = "lk", description = "List all available key codes.")
     public static class ListKeys implements Runnable {
         @Override
@@ -150,7 +146,6 @@ public class WordSaver {
         }
     }   
 
-
     public static String getKeyByValue(int value) {
         for (Map.Entry<String, Integer> entry : AVAILABLE_KEY_CODES.entrySet()) {
             if (Objects.equals(value, entry.getValue())) {
@@ -159,8 +154,6 @@ public class WordSaver {
         }
         return null;
     }
-
-
 
     private static class KeyCodeConverter implements CommandLine.ITypeConverter<Integer> {
         @Override
